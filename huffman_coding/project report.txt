@@ -1,0 +1,15 @@
+Huffman algorithm is a method that is used for data compression in computer science.
+The best part of the algorithm is that algorithm is using the frequencys of the characters to code
+so the most used characters takes the least space in coding.This makes the huffman algorithm better
+than ascii coding.
+So,how to build a huffman tree?
+Firstly, we need to calculate frequency of every character from the given message
+then, make every character and its frequency a node and when every characters of the message become node uniquely
+we sort them with their frequency.After that we make a while loop that returns till there is
+only one node.In the loop we take the two nodes that has the least frequency and make them one node
+and put it in the order and each step we sort them again.I used vector to keep the nodes and with the
+STL library and lamda expression i can easily sort them.After the loop is done,
+there is only one node in vector which is our root of the huffman tree.Ýf we wanna get the code of a character 
+from the tree, we should traverse it.If we go from the right, we add our code "1" and from left we add "0" till we hit the
+character we looking for.
+That is how i build my huffman tree.

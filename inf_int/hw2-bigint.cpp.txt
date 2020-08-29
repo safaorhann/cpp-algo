@@ -1,0 +1,501 @@
+/*
+SAFA ORHAN
+
+OOP HOMEWORK#2
+inf_int class implementation
+
+I did not ask to the user to get a 'BIGINTEGER' since main program was given in the homework 
+but if you wanna try it with biginteger, (which you should for everyone) you're gonna be have to send
+your bigint number by yourself because i was not given a specified bigint number.   
+*/
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class inf_int
+{
+private:
+	char *digit;
+	unsigned int length;
+	bool thesign;
+public:
+	inf_int();
+	inf_int(int ival);
+	inf_int(string sval);
+	inf_int(inf_int &u_obj);
+	void deleteFirstDigit();
+	void setValue(int ival);
+	void add(inf_int &u_obj);
+	void changeSign();
+	void print();
+	void concatenate(inf_int &u_obj);
+	inf_int& operator= (const inf_int& u_obj);
+	inf_int operator++ (int);
+	inf_int operator+ (inf_int &u_obj);
+	~inf_int();
+};
+inf_int::inf_int(int ival)
+{
+	string s = to_string(ival);
+	if (ival < 0)
+	{
+		thesign = 0;
+		length = s.length() - 1;
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = s[i + 1];
+	}
+	else
+	{
+		thesign = 1;
+		length = s.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = s[i];
+	}
+}
+inf_int::inf_int(string sval)
+{
+	length = sval.length() - 1;
+	if (sval[0] == '-')
+	{
+		thesign = 0;
+		length = sval.length() - 1;
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = sval[i + 1];
+	}
+	else
+	{
+		thesign = 1;
+		length = sval.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = sval[i];
+	}
+}
+inf_int::inf_int()
+{
+	length = 1;
+	digit = new char[length];
+	digit[0] = '0';
+	thesign = 1;
+}
+inf_int::inf_int(inf_int &u_obj)
+{
+	length = u_obj.length;
+	digit = new char[length];
+
+	for (int i = 0; i < (int)length; i++)
+		digit[i] = u_obj.digit[i];
+	thesign = u_obj.thesign;
+}
+void inf_int::deleteFirstDigit()
+{
+	char *temp = new char[length];
+	for (int i = 0; i < (int)length; i++)
+		temp[i] = digit[i];
+	delete[] digit;
+	length--;
+	digit = new char[length];
+
+	for (int i = 0; i < (int)length; i++)
+		digit[i] = temp[i + 1];
+	delete[] temp;
+}
+void inf_int::setValue(int ival)
+{
+	delete[] digit;
+	string s = to_string(ival);
+	if (ival < 0)
+	{
+		thesign = 0;
+		length = s.length() - 1;
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = s[i + 1];
+	}
+	else
+	{
+		thesign = 1;
+		length = s.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = s[i];
+	}
+}
+void inf_int::add(inf_int &u_obj)
+{
+	int carry = 0, sum;
+	string temp1, temp2, temp3;
+	if ((length < u_obj.length) && (thesign != u_obj.thesign))
+	{
+		int tempNum1, tempNum2;
+		for (int i = 0; i < (int)length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			temp2 = u_obj.digit[u_obj.length - i - 1];
+			tempNum1 = stoi(temp1);
+			tempNum2 = stoi(temp2) - carry;
+			if (tempNum2 < tempNum1)
+			{
+				sum = (tempNum2 + 10) - tempNum1;
+				temp3 += to_string(sum);
+				carry = 1;
+			}
+			else
+			{
+				sum = tempNum2 - tempNum1;
+				temp3 += to_string(sum);
+				carry = 0;
+			}
+		}
+		for (int i = (int)length; i < (int)u_obj.length; i++)
+		{
+			temp2 = u_obj.digit[u_obj.length - i - 1];
+			tempNum2 = stoi(temp2) - carry;
+			if (tempNum2 < 0)
+			{
+				sum = tempNum2 + 10;
+				carry = 1;
+			}
+			temp3 += to_string(tempNum2);
+			carry = 0;
+		}
+		delete[] digit;
+		length = temp3.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = temp3[length - i - 1];
+		thesign = u_obj.thesign;
+	}
+	else if ((length > u_obj.length) && (thesign != u_obj.thesign))
+	{
+		int tempNum1, tempNum2;
+		for (int i = 0; i < (int)u_obj.length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			temp2 = u_obj.digit[u_obj.length - i - 1];
+			tempNum1 = stoi(temp1) - carry;
+			tempNum2 = stoi(temp2);
+			if (tempNum1 < tempNum2)
+			{
+				sum = (tempNum1 + 10) - tempNum2;
+				temp3 += to_string(sum);
+				carry = 1;
+			}
+			else
+			{
+				sum = tempNum1 - tempNum2;
+				temp3 += to_string(sum);
+				carry = 0;
+			}
+		}
+		for (int i = (int)u_obj.length; i < (int)length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			tempNum1 = stoi(temp1) - carry;
+			if (tempNum1 < 0)
+			{
+				sum = tempNum1 + 10;
+				carry = 1;
+			}
+			temp3 += to_string(tempNum1);
+			carry = 0;
+		}
+		delete[] digit;
+		length = temp3.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = temp3[length - i - 1];
+	}
+	else if ((length == u_obj.length) && (thesign != u_obj.thesign))
+	{
+		int tempNum1, tempNum2, j;
+		string tempA, tempB;
+		for (int i = 0; i < (int)length; i++)
+		{
+			if (digit[i] == u_obj.digit[i])
+				j = 0;
+			else
+			{
+				j = i;
+				break;
+			}
+		}
+		tempA = digit[j];
+		tempB = u_obj.digit[j];
+		if (tempA > tempB)
+		{
+			for (int i = 0; i < (int)u_obj.length; i++)
+			{
+				temp1 = digit[length - i - 1];
+				temp2 = u_obj.digit[u_obj.length - i - 1];
+				tempNum1 = stoi(temp1) - carry;
+				tempNum2 = stoi(temp2);
+				if (tempNum1 < tempNum2)
+				{
+					sum = (tempNum1 + 10) - tempNum2;
+					temp3 += to_string(sum);
+					carry = 1;
+				}
+				else
+				{
+					sum = tempNum1 - tempNum2;
+					temp3 += to_string(sum);
+					carry = 0;
+				}
+			}
+			for (int i = (int)u_obj.length; i < (int)length; i++)
+			{
+				temp1 = digit[length - i - 1];
+				tempNum1 = stoi(temp1) - carry;
+				if (tempNum1 < 0)
+				{
+					sum = tempNum1 + 10;
+					carry = 1;
+				}
+				temp3 += to_string(tempNum1);
+				carry = 0;
+			}
+			delete[] digit;
+			length = temp3.length();
+			digit = new char[length];
+			for (int i = 0; i < (int)length; i++)
+				digit[i] = temp3[length - i - 1];
+		}
+		else if (tempA < tempB)
+		{
+			for (int i = 0; i < (int)length; i++)
+			{
+				temp1 = digit[length - i - 1];
+				temp2 = u_obj.digit[u_obj.length - i - 1];
+				tempNum1 = stoi(temp1);
+				tempNum2 = stoi(temp2) - carry;
+				if (tempNum2 < tempNum1)
+				{
+					sum = (tempNum2 + 10) - tempNum1;
+					temp3 += to_string(sum);
+					carry = 1;
+				}
+				else
+				{
+					sum = tempNum2 - tempNum1;
+					temp3 += to_string(sum);
+					carry = 0;
+				}
+			}
+			for (int i = (int)length; i < (int)u_obj.length; i++)
+			{
+				temp2 = u_obj.digit[u_obj.length - i - 1];
+				tempNum2 = stoi(temp2) - carry;
+				if (tempNum2 < 0)
+				{
+					sum = tempNum2 + 10;
+					carry = 1;
+				}
+				temp3 += to_string(tempNum2);
+				carry = 0;
+			}
+			delete[] digit;
+			length = temp3.length();
+			digit = new char[length];
+			for (int i = 0; i < (int)length; i++)
+				digit[i] = temp3[length - i - 1];
+			thesign = u_obj.thesign;
+		}
+		else if ((length < u_obj.length) && (thesign == u_obj.thesign))
+		{
+			for (int i = 0; i < (int)length; i++)
+			{
+				temp1 = digit[length - i - 1];
+				temp2 = u_obj.digit[u_obj.length - i - 1];
+				sum = stoi(temp1) + stoi(temp2) + carry;
+				carry = sum / 10;
+				temp3 += to_string(sum % 10);
+			}
+			for (int i = (int)length; i < (int)u_obj.length; i++)
+			{
+				temp2 = u_obj.digit[u_obj.length - i - 1];
+				sum = stoi(temp2) + carry;
+				carry = sum / 10;
+				temp3 += to_string(sum % 10);
+			}
+			if (carry != 0)
+				temp3 += to_string(carry);
+			delete[] digit;
+			length = temp3.length();
+			digit = new char[length];
+			for (int i = 0; i < (int)length; i++)
+				digit[i] = temp3[length - i - 1];
+		}
+		else
+		{
+			delete[] digit;
+			length = 1;
+			thesign = 1;
+			digit = new char[length];
+			digit[0] = '0';
+		}
+	}
+	
+	else if ((length > u_obj.length) && (thesign == u_obj.thesign))
+	{
+		for (int i = 0; i < (int)u_obj.length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			temp2 = u_obj.digit[u_obj.length - i - 1];
+			sum = stoi(temp1) + stoi(temp2) + carry;
+			carry = sum / 10;
+			temp3 += to_string(sum % 10);
+		}
+		for (int i = (int)u_obj.length; i < (int)length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			sum = stoi(temp1) + carry;
+			carry = sum / 10;
+			temp3 += to_string(sum % 10);
+		}
+		if (carry != 0)
+			temp3 += to_string(carry);
+		delete[] digit;
+		length = temp3.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = temp3[length - i - 1];
+	}
+	else
+	{
+		for (int i = 0; i < (int)length; i++)
+		{
+			temp1 = digit[length - i - 1];
+			temp2 = u_obj.digit[u_obj.length - i - 1];
+			sum = stoi(temp1) + stoi(temp2) + carry;
+			carry = sum / 10;
+			temp3 += to_string(sum % 10);
+		}
+		if (carry != 0)
+			temp3 += to_string(carry);
+		delete[] digit;
+		length = temp3.length();
+		digit = new char[length];
+		for (int i = 0; i < (int)length; i++)
+			digit[i] = temp3[length - i - 1];
+	}
+}
+void inf_int::changeSign()
+{
+	if (thesign == 1)
+		thesign = 0;
+	else
+		thesign = 1;
+}
+void inf_int::concatenate(inf_int &u_obj)
+{
+	int size = (int)(length + u_obj.length);
+	char *temp = new char[length + u_obj.length];
+	for (int i = 0; i < (int)length; i++)
+		temp[i] = digit[i];
+	int k = 0;
+	for (int i = (int)length; i < size; i++)
+	{
+		temp[i] = u_obj.digit[k++];
+	}
+	delete[] digit;
+	length = size;
+	digit = new char[length];
+
+	for (int i = 0; i < size; i++)
+		digit[i] = temp[i];
+	delete[] temp;
+}
+inf_int& inf_int::operator= (const inf_int& u_obj)
+{
+	delete[] digit;
+	length = u_obj.length;
+	digit = new char[length];
+
+	for (int i = 0; i < (int)length; i++)
+		digit[i] = u_obj.digit[i];
+
+	thesign = u_obj.thesign;
+	return *this;
+}
+inf_int inf_int::operator++ (int)
+{
+	inf_int primary(*this);
+	inf_int temp(1);
+	add(temp);
+
+	return primary;
+}
+inf_int inf_int::operator+ (inf_int &u_obj)
+{
+	inf_int recent;
+	add(u_obj);
+
+	delete[] recent.digit;
+	recent.length = length;
+	recent.thesign = thesign;
+	recent.digit = new char[recent.length];
+	for (int i = 0; i < (int)recent.length; i++)
+		recent.digit[i] = digit[i];
+
+	return recent;
+}
+void inf_int::print()
+{
+	cout << "Digits: ";
+	for (int i = 0; i < (int)length; i++)
+		cout << digit[i];
+	cout << " ";
+	cout << "Length: " << length << " ";
+	if (thesign)
+		cout << "The sign: +" << endl;
+	else
+		cout << "The sign: -" << endl;
+}
+inf_int::~inf_int()
+{
+	delete[] digit;
+	length = 0;
+	thesign = true;
+}
+
+
+int main()
+{
+	inf_int x1(19);
+	inf_int x2("125");
+	inf_int x3;
+	inf_int x4(-97);
+	inf_int x5("-35");
+
+	x2.deleteFirstDigit();
+	x2.print();
+
+	x3.setValue(42);
+	x3.print();
+
+	x1.add(x2);
+	x1.print();
+
+	x1.changeSign();
+	x1.print();
+
+	x3.concatenate(x2);
+	x3.print();
+
+	x4 = x3;
+	x4.print();
+
+	x3++;
+	x3.print();
+	x5 = (x3 + x2);
+	x5.print();
+
+
+	system("pause");
+	return 0;
+}
